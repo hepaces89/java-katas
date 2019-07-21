@@ -12,6 +12,9 @@ public class BinaryTreeSecondLargest {
     public static void main(String[] args){
         Node root = buildBinarySearchTree(Arrays.asList(5,2,4,6,2,7));
         System.out.println(inOrderTraversal(root));
+        System.out.println(preOrderTraversal(root));
+        System.out.println(postOrderTraversal(root));
+        System.out.println(root);
 
         System.out.println(getSecondLargestFromTree(root));
 
@@ -50,6 +53,44 @@ public class BinaryTreeSecondLargest {
                 lesserVals.add(root.value);
                 lesserVals.addAll(greaterVals);
                 vals = lesserVals;
+            }
+        }
+
+        return vals;
+    }
+
+    public static List<Integer> preOrderTraversal(Node root){
+        List<Integer> vals = new ArrayList<>();
+
+        if(root != null){
+            if(root.children.stream().filter((Node child) -> {return (child != null);}).collect(Collectors.toList()).size() == 0){
+                //if leave node (all null children)
+                vals.add(root.value);
+            } else {
+                List<Integer> lesserVals = inOrderTraversal(root.children.get(0));
+                List<Integer> greaterVals = inOrderTraversal(root.children.get(1));
+                vals.add(root.value);
+                vals.addAll(lesserVals);
+                vals.addAll(greaterVals);
+            }
+        }
+
+        return vals;
+    }
+
+    public static List<Integer> postOrderTraversal(Node root){
+        List<Integer> vals = new ArrayList<>();
+
+        if(root != null){
+            if(root.children.stream().filter((Node child) -> {return (child != null);}).collect(Collectors.toList()).size() == 0){
+                //if leave node (all null children)
+                vals.add(root.value);
+            } else {
+                List<Integer> lesserVals = inOrderTraversal(root.children.get(0));
+                List<Integer> greaterVals = inOrderTraversal(root.children.get(1));
+                vals.addAll(lesserVals);
+                vals.addAll(greaterVals);
+                vals.add(root.value);
             }
         }
 
@@ -113,6 +154,24 @@ public class BinaryTreeSecondLargest {
 
         public Node(Node parent, int value){
             this(parent, value, Arrays.asList(null, null));
+        }
+
+        private Integer generationsToNull(){
+            Integer num = 0;
+            Node cursor = this;
+            while(cursor.parent != null){
+                num = num + 1;
+                cursor = cursor.parent;
+            }
+            return num;
+        }
+
+        public String toString(){
+            StringBuilder tabs = new StringBuilder();
+            for(int i = 0; i < this.generationsToNull(); i++){
+                tabs.append("\t");
+            }
+            return "{value: " + this.value + ", children: " + "\n" + tabs.toString() + children + "\n}";
         }
     }
 }
